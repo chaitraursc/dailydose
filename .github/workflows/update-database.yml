@@ -1,0 +1,37 @@
+name: Update PostgreSQL Database
+
+on:
+  schedule:
+  # runs every 8 hours 00:00, 08:00, 16:00
+    - cron: "0 */8 * * *"
+
+
+  # Optionally, allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  update-database:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      # Step 3: Install Python dependencies
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt  # If you have a requirements file
+
+      # Step 4: Run the database update script
+      - name: Run update script
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}  # PostgreSQL connection string from GitHub Secrets
+        run: |
+          python manage.py fetch
