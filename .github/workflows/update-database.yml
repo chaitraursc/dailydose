@@ -3,7 +3,7 @@ name: Update PostgreSQL Database
 on:
   schedule:
   # runs every 8 hours 00:00, 08:00, 16:00
-    - cron: "0 */8 * * *"
+    - cron: "0 */1 * * *"
 
 
   # Optionally, allow manual triggering
