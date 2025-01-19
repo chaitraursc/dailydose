@@ -4,7 +4,7 @@ import feedparser   # To parse RSS feeds
 from articles.models import BaseArticle, Category
 from bs4 import BeautifulSoup  # To clean HTML from descriptions (HTML tags like <p>, <h1> are cleaned to extract only the content)
 import html   # To convert HTML entities(&amp, &lt, etc.,) in descriptions to readable format(&amp -> &) using html.unescape(text)
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 class Command(BaseCommand):
     # Description of the command functionality
@@ -25,7 +25,7 @@ class Command(BaseCommand):
         for entry in feed.entries:
 
             category = 'unknown'            # Default category if no category found in RSS
-            title = entry.get('title', 'No Title')
+            title = entry.get('title', 'No Title')[:100]
             link = entry.get('link', '')
             description = entry.get('description', '')[:300]
         
@@ -66,7 +66,7 @@ class Command(BaseCommand):
             category_obj, created = Category.objects.get_or_create(name=category)
 
             # Check if the article already exists in the database, and only add new ones
-            if published_at == date.today() and not BaseArticle.objects.filter(title=title).exists():
+            if published_at >= (date.today() - timedelta(days=2)) and not BaseArticle.objects.filter(title=title).exists():
                 # Create a new article entry in the database
                 BaseArticle.objects.get_or_create(
                     title=title,
@@ -94,7 +94,7 @@ class Command(BaseCommand):
         }
 
         Category.objects.all().delete()
-        BaseArticle.objects.exclude(published_at=date.today()).delete()
+        BaseArticle.objects.exclude(published_at=(date.today() - timedelta(days=2))).delete()
         
         # List of RSS feed URLs and their respective sources
         feeds = [
