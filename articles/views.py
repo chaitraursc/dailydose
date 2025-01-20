@@ -9,9 +9,9 @@ def home(request):
     
     articles_by_category = {} # Dictionary to store articles categorized by category names
 
-    # Loop through each category name and fetch the latest 2 articles (order_by('-id')[:2])
+    # Loop through each category name and fetch the latest 2 articles (order_by('-published_at')[:2])
     for category_name in main_categories:
-        category_articles = BaseArticle.objects.filter(category__name=category_name).order_by('-id')[:2]
+        category_articles = BaseArticle.objects.filter(category__name=category_name).order_by('-published_at')[:2]
         articles_by_category[category_name] = category_articles
     
     return render(request, 'articles/home.html', {'articles_by_category': articles_by_category})
@@ -19,5 +19,5 @@ def home(request):
 # Fetch all articles for a given category and render the category page(latest first)
 def category_articles(request, category_name):
 
-    articles = BaseArticle.objects.filter(category__name=category_name).order_by('-id')
+    articles = BaseArticle.objects.filter(category__name=category_name).order_by('-published_at')
     return render(request, 'articles/category_articles.html', {'category_name': category_name, 'articles': articles})
