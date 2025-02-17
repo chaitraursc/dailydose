@@ -1,43 +1,69 @@
-{% load static %}   <!-- Load static files for CSS, images, etc. -->
+{% load static %}
+<!-- Load static files for CSS, images, etc. -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DailyDose</title>  <!-- Page title -->
-  <link rel="stylesheet" type="text/css" href="{% static 'articles/css/styles.css' %}">  <!-- Link to the external CSS file for styling the page -->
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DailyDose</title>
+    <!-- Page title -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'articles/css/styles.css' %}"
+    />
+    <!-- Link to the external CSS file for styling the page -->
+  </head>
+  <body>
     <header>
-        <div class="container">
-          <h1 class="title">DailyDose</h1>  <!-- Site title -->
-          <nav class="nav-container">
-            <ul class="nav-links">           <!-- Links to home page and specific category pages -->
-                <li><a href="{% url 'home' %}">Home</a></li>
-                <li><a href="{% url 'category_articles' category_name='World' %}">World</a></li>
-                <li><a href="{% url 'category_articles' category_name='Business' %}">Business</a></li>
-                <li><a href="{% url 'category_articles' category_name='Science & Technology' %}">Science & Technology</a></li>
-            </ul>
-          </nav>
-        </div>
-      </header>
-      
-<!-- Main content area that displays news articles -->
-  <main class="news-container">
-    {% for category, articles in articles_by_category.items %}          <!-- Loop through each category and its associated articles -->
+      <div class="container">
+        <h1 class="title">DailyDose</h1>
+        <!-- Site title -->
+        <nav class="nav-container">
+          <ul class="nav-links">
+            <!-- Links to home page and specific category pages -->
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li>
+              <a href="{% url 'category_articles' category_name='World' %}"
+                >World</a
+              >
+            </li>
+            <li>
+              <a href="{% url 'category_articles' category_name='Business' %}"
+                >Business</a
+              >
+            </li>
+            <li>
+              <a
+                href="{% url 'category_articles' category_name='Science & Technology' %}"
+                >Science & Technology</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main content area that displays news articles -->
+    <main class="news-container">
+      {% for category, articles in articles_by_category.items %}
+      <!-- Loop through each category and its associated articles -->
       {% for article in articles %}
-      <div class="news-card">                                           <!-- Display each article in a styled "news card" -->
+      <div class="news-card">
+        <!-- Display each article in a styled "news card" -->
         <h2 class="news-title">{{ article.title }}</h2>
         <p class="news-description">{{ article.description }}</p>
-        <div class="news-footer">                                       <!-- Footer with article source and link to the full article -->
-          <span class="news-source">Source: <strong>{{ article.source }}</strong></span>
-          <a href="{{ article.link }}" class="btn">Full Article</a>
+        <div class="news-footer">
+          <!-- Footer with article source and link to the full article -->
+          <span class="news-source"
+            >Source: <strong>{{ article.source }}</strong></span
+          >
+          <a href="{{ article.link }}" class="btn" target="_blank"
+            >Full Article</a
+          >
         </div>
       </div>
-      {% endfor %}
-    {% endfor %}
-  </main>
-
-</body>
+      {% endfor %} {% endfor %}
+    </main>
+  </body>
 </html>
-
