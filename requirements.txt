@@ -16,3 +16,11 @@ sqlparse==0.5.3
 typing_extensions==4.12.2
 uvicorn==0.34.0
 whitenoise==6.8.2
+
+# Testing and Code Quality
+pytest==7.4.3
+pytest-django==4.7.0
+coverage==7.3.2
+
+# Optional: For better caching support
+django-redis==5.4.0
