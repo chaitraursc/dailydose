@@ -32,6 +32,11 @@ jobs:
       # Step 4: Run the database update script
       - name: Run update script
         env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          ADDITIONAL_HOSTS: localhost,127.0.0.1
           DATABASE_URL: ${{ secrets.DATABASE_URL }}  # PostgreSQL connection string from GitHub Secrets
         run: |
+          if [ -z "$SECRET_KEY" ]; then
+            export SECRET_KEY="github-actions-ephemeral-secret-key"
+          fi
           python manage.py fetch
