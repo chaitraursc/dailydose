@@ -22,6 +22,7 @@ jobs:
     timeout-minutes: 8 # kill the job if it exceeds 8 minutes to prevent hanging.
     steps:
       - name: Ping URL
+        shell: bash
         # Attempt to ping the URL 5 times each not more than 10 seconds. Exit early if successful and fail otherwise.
         run: |
           for i in {1..5}; do
