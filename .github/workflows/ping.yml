@@ -2,13 +2,53 @@ name: Ping my website
 
 on:
   schedule:
-  # runs every 10 minutes
-    - cron: '*/5 * * * *'
+    # runs every 5  minutes as a backup trigger if self-trigger breaks.
+    - cron: "*/5 * * * *"
+  workflow_dispatch: # allows programmatic triggering of the workflow via the API.
+
+permissions:
+  # permissions to allow the workflow to trigger itself via the API.
+  actions: write
+
+# ensure only one instance of the workflow runs at a time.
+concurrency:
+  group: ping-url
+  # allows the current instance to continue running if a new instance is triggered.
+  cancel-in-progress: false
 
 jobs:
   ping_url:
     runs-on: ubuntu-latest
+    timeout-minutes: 8 # kill the job if it exceeds 8 minutes to prevent hanging.
     steps:
       - name: Ping URL
+        # Attempt to ping the URL 5 times each not more than 10 seconds. Exit early if successful and fail otherwise.
         run: |
-          curl -s -o /dev/null -w "%{http_code}" ${{ secrets.PING_URL }}
+          for i in {1..5}; do
+            status = $(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "${{ secrets.PING_URL }}")
+            echo "Attempt $i: HTTP status code $status"
+
+            # if successful, stop pinging.
+            if [ "$status" -ge 200 ] && [ "$status" -lt 300 ] ; then
+              echo "URL is up!"
+              exit 0
+            fi
+
+            # wait for 15 seconds before the next ping.
+            sleep 15
+          done
+
+          echo "URL is down after 5 attempts."
+          exit 1
+
+      - name: Wait for 5 minutes before next ping
+        run: sleep 300
+
+      - name: Trigger next ping
+        # trigger the workflow again via the API to ensure it runs every 5 minutes.
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/ping.yml/dispatches \
+            -d '{"ref":"main"}'
