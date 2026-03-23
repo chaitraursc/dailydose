@@ -25,7 +25,7 @@ jobs:
         # Attempt to ping the URL 5 times each not more than 10 seconds. Exit early if successful and fail otherwise.
         run: |
           for i in $(seq 1 5); do
-            status = $(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "${{ secrets.PING_URL }}")
+            status=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "${{ secrets.PING_URL }}")
             echo "Attempt $i: HTTP status code $status"
 
             # if successful, stop pinging.
